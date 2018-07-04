@@ -1,0 +1,2 @@
+class NotesResource:
+    pass

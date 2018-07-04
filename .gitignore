@@ -1,0 +1,12 @@
+.*.swp
+*.pyc
+*.pyo
+*.egg-info
+build/
+dist/
+__pycache__/
+Pipfile.lock
+
+.DS_Store
+.idea
+.vscode

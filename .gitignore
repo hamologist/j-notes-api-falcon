@@ -5,6 +5,7 @@
 build/
 dist/
 __pycache__/
+.pytest_cache/
 Pipfile.lock
 
 .DS_Store

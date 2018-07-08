@@ -1,4 +1,5 @@
-from .app import get_app
+import logging
 
+from j_notes_api.app import app
 
-APP = get_app()
+logging.basicConfig(level=logging.DEBUG)

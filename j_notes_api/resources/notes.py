@@ -1,13 +1,13 @@
-from bson.json_util import dumps
-
 import falcon
-
-from j_notes_api.db import NOTES_COLLECTION
+from bson.json_util import dumps
+from pymongo.collection import Collection
 
 
 class NotesResource:
 
-    @staticmethod
-    def on_get(_: falcon.Request, resp: falcon.Response):
-        notes = NOTES_COLLECTION.find({})
+    def __init__(self, notes: Collection):
+        self.notes: Collection = notes
+
+    def on_get(self, _: falcon.Request, resp: falcon.Response):
+        notes = self.notes.find({})
         resp.body = dumps(notes)

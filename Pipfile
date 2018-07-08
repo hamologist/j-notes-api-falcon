@@ -7,9 +7,16 @@ name = "pypi"
 falcon = "==1.4"
 gunicorn = "==19.9"
 pymongo = "==3.7"
+google-auth = "*"
+requests = "*"
 
 [dev-packages]
 pytest = "==3.6"
+pylint = "==2.0.dev2"
+coverage = "==5.0a1"
 
 [requires]
 python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true

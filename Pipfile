@@ -7,8 +7,9 @@ name = "pypi"
 falcon = "==1.4"
 gunicorn = "==19.9"
 pymongo = "==3.7"
-google-auth = "*"
-requests = "*"
+google-auth = "==1.5"
+requests = "==2.19"
+pyjwt = "==1.6"
 
 [dev-packages]
 pytest = "==3.6"

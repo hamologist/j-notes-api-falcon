@@ -1,3 +1,2 @@
-from .notes import NotesResource
 from .sessions import SessionsResource
-from .users import UsersResource
+from .user_notes import UserNotesResource

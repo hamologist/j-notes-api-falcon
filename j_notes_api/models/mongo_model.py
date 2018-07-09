@@ -8,7 +8,7 @@ class MongoModel:
         if not data:
             raise EmptyMongoModelException(
                 '"None" was provided to the "{}" Mongo model'.format(self.__class__.__name__))
-        self.uuid = uuid if uuid else data.get('_id')
+        self.uuid: ObjectId = uuid if uuid else data.get('_id')
 
 
 class EmptyMongoModelException(Exception):

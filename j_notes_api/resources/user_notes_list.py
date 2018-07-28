@@ -1,47 +1,46 @@
-import json
 from datetime import datetime
+import json
 
 import falcon
-from bson import ObjectId, json_util
+from bson import json_util
+from bson.objectid import ObjectId
 from pymongo.collection import Collection
 from pymongo.errors import WriteError
 
 from j_notes_api.models import User
 
 
-class UserNotesResource:
+class UserNotesListResource:
 
     def __init__(self, notes: Collection):
         self._notes: Collection = notes
 
-    def on_get(self, req: falcon.Request, resp: falcon.Response, user_id: str, note_id: str):
+    def on_get(self, req: falcon.Request, resp: falcon.Response, user_id: str):
         user: User = req.user
         if user_id != str(user.uuid):
             resp.status = falcon.HTTP_BAD_REQUEST
             resp.body = 'Attempting to access another user\'s data'
             return
 
-        user_notes = self._notes.find({'_id': ObjectId(note_id)})
-        resp.body = json_util.dumps(user_notes)
+        user_notes = self._notes.find({'user': ObjectId(user_id)})
+        if user_notes.count():
+            resp.body = json_util.dumps(user_notes)
 
-    def on_put(self, req: falcon.Request, resp: falcon.Response, user_id: str, note_id: str):
+    def on_post(self, req: falcon.Request, resp: falcon.Response, user_id: str):
         user: User = req.user
         if user_id != str(user.uuid):
             resp.status = falcon.HTTP_BAD_REQUEST
-            resp.body = 'Attempting to update another user\'s data'
+            resp.body = 'Attempting to create a note as another user'
             return
 
         try:
             payload = json_util.loads(req.bounded_stream.read())
-            note_filter = {
-                '_id': ObjectId(note_id),
-                'user': ObjectId(user_id)
-            }
+            now = datetime.now()
             data = {
-                '$set': {
-                    'text': payload.get('text', ''),
-                    'dateModified': datetime.now()
-                }
+                'user': ObjectId(user_id),
+                'text': payload.get('text', ''),
+                'dateCreated': now,
+                'dateModified': now,
             }
         except json.JSONDecodeError:
             resp.status = falcon.HTTP_BAD_REQUEST
@@ -49,8 +48,10 @@ class UserNotesResource:
             return
 
         try:
-            self._notes.update_one(note_filter, data)
+            result = self._notes.insert_one(data)
         except WriteError:
             resp.status = falcon.HTTP_BAD_REQUEST
             resp.body = 'The provided payload failed to pass validation'
             return
+
+        resp.body = str(result.inserted_id)

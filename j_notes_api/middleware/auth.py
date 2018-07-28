@@ -2,6 +2,7 @@ import datetime
 from typing import Dict, Tuple, Union
 
 import falcon
+from bson import ObjectId
 from pymongo.collection import Collection
 
 from j_notes_api.models import User
@@ -42,7 +43,7 @@ class AuthMiddleware:
         valid = False
 
         try:
-            user = User(self._users.find_one({'_id': user_id, 'authToken': user_token}))
+            user = User(self._users.find_one({'_id': ObjectId(user_id), 'authToken': user_token}))
             if user.auth_token_expiry > datetime.datetime.now():
                 valid = True
         except EmptyMongoModelException:

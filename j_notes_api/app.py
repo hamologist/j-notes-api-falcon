@@ -11,7 +11,8 @@ from j_notes_api.services import UserService
 
 RESOURCE_MAP: Dict[type, str] = {
     resources.SessionsResource: '/sessions',
-    resources.UserNotesResource: '/users/{uuid}/notes'
+    resources.UserNotesResource: '/users/{user_id}/notes/{note_id}',
+    resources.UserNotesListResource: '/users/{user_id}/notes',
 }
 
 __CLIENT_ID:                 str = os.getenv('CLIENT_ID')
@@ -28,10 +29,12 @@ def create_app() -> falcon.API:
     user_service = UserService(__USERS_COLLECTION, __AUTH_PROVIDERS_COLLECTION)
     sessions_resource = resources.SessionsResource(
         __CLIENT_ID, __AUTH_PROVIDERS_COLLECTION, __USERS_COLLECTION, user_service)
-    user_notes_resource = resources.UserNotesResource()
+    user_notes_resource = resources.UserNotesResource(__NOTES_COLLECTION)
+    user_notes_list_resource = resources.UserNotesListResource(__NOTES_COLLECTION)
 
     api = falcon.API(middleware=auth_middleware)
     api.add_route(RESOURCE_MAP[resources.SessionsResource], sessions_resource)
     api.add_route(RESOURCE_MAP[resources.UserNotesResource], user_notes_resource)
+    api.add_route(RESOURCE_MAP[resources.UserNotesListResource], user_notes_list_resource)
 
     return api
